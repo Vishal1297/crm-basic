@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
 
-	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/v2"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/vishal1297/crm-basic/database"
 	"github.com/vishal1297/crm-basic/lead"
 )
 
-const PORT = 3000
+const HOST_PORT = "localhost:3000"
 
 func main() {
 	app := fiber.New()
@@ -19,14 +20,13 @@ func main() {
 	initDB()
 
 	setupRoutes(app)
-	app.Listen(PORT)
+	// start server
+	log.Fatal(app.Listen(HOST_PORT))
 
-	fmt.Println("Application started at PORT", PORT)
+	fmt.Println("Application started at", HOST_PORT)
 
 	// at last close DB connection
 	defer database.DBConn.Close()
-
-	fmt.Println("Application is running...")
 }
 
 func setupRoutes(app *fiber.App) {

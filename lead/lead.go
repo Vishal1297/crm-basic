@@ -1,7 +1,7 @@
 package lead
 
 import (
-	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/v2"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/vishal1297/crm-basic/database"
@@ -15,46 +15,43 @@ type Lead struct {
 	Phone   int    `json:"phone"`
 }
 
-func GetLead(c *fiber.Ctx) {
+func GetLead(c *fiber.Ctx) error {
 	id := c.Params("id")
 	db := database.DBConn
 	var lead Lead
 	db.Find(&lead, id)
 	if lead.Name == "" {
-		c.Status(500).Send("No lead found with ID")
-		return
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "No lead found with ID", "data": nil})
 	}
-	c.JSON(lead)
+	return c.JSON(fiber.Map{"status": "success", "message": "Lead fetched successfully", "data": lead})
 }
 
-func GetLeads(c *fiber.Ctx) {
+func GetLeads(c *fiber.Ctx) error {
 	db := database.DBConn
 	var leads []Lead
 	db.Find(&leads)
-	c.JSON(leads)
+	return c.JSON(fiber.Map{"status": "success", "message": "All leads fetched successfully", "data": leads})
 }
 
-func NewLead(c *fiber.Ctx) {
+func NewLead(c *fiber.Ctx) error {
 	db := database.DBConn
 	lead := new(Lead)
 	if err := c.BodyParser(lead); err != nil {
-		c.Status(503).Send(err)
-		return
+		return c.Status(503).JSON(fiber.Map{"status": "error", "message": "Unable to parse lead", "data": nil})
 	}
 	db.Create(&lead)
-	c.JSON(lead)
+	return c.JSON(fiber.Map{"status": "success", "message": "Lead created successfully", "data": lead})
 }
 
-func DeleteLead(c *fiber.Ctx) {
+func DeleteLead(c *fiber.Ctx) error {
 	id := c.Params("id")
 	db := database.DBConn
 
 	var lead Lead
 	db.First(&lead, id)
 	if lead.Name == "" {
-		c.Status(500).Send("No lead found with ID")
-		return
+		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "No lead found with ID", "data": nil})
 	}
 	db.Delete(&lead)
-	c.Send("Lead successfully deleted")
+	return c.JSON(fiber.Map{"status": "success", "message": "Lead deleted successfully", "data": lead})
 }
