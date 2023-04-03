@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -20,10 +19,11 @@ func main() {
 	initDB()
 
 	setupRoutes(app)
+
+	log.Print("- Application will start at ", HOST_PORT)
+
 	// start server
 	log.Fatal(app.Listen(HOST_PORT))
-
-	fmt.Println("Application started at", HOST_PORT)
 
 	// at last close DB connection
 	defer database.DBConn.Close()
@@ -42,8 +42,7 @@ func initDB() {
 	if err != nil {
 		panic("Database connection failed")
 	}
-
-	fmt.Println("Connection opened to database")
+	log.Print("- Connection opened to database")
 	database.DBConn.AutoMigrate(&lead.Lead{})
-	fmt.Println("Database Migrated")
+	log.Print("- Database Migrated")
 }
