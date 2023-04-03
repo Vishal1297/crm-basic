@@ -10,7 +10,7 @@ import (
 	"github.com/vishal1297/crm-basic/lead"
 )
 
-const HOST_PORT = "localhost:3000"
+const HOST_PORT = ":3000"
 
 func main() {
 	app := fiber.New()
